@@ -1,0 +1,2337 @@
+from time import time as reloj 
+from pygame import *
+import pygame
+pygame.init()
+import random
+pelota = transform.scale(image.load('fuchibolsinfondo.png'), (50, 50))
+pelotacongelada = transform.scale(image.load('fuchibol congelado.png'), (50, 50))
+pelotacongelada30 = transform.scale(image.load('fuchibol congelado30.png'), (50, 50))
+pelota30 = transform.scale(image.load('fuchibol30.png'), (50, 50))
+fondo = transform.scale(image.load('pistadefutbol.png'), (800, 600))
+marcador = image.load('marcador.png')
+
+
+rular = True
+icono = image.load('icono.png')
+FPS = 60
+ventana = display.set_mode((800,600))
+pygame.display.set_icon(icono)
+pygame.display.set_caption('juego de futbol')
+#pygame.display.toggle_fullscreen()
+veljugador1 = 3
+veljugador2 = 3
+cronobuenoaproxmas = 0
+mixer.init()
+mixer.music.load('musicasecond.mp3')
+mixer.music.set_volume(0.1)
+mixer.music.play(-1)
+sonidodelgolpe = 1.0
+golpesound = mixer.Sound('golpefutbol.mp3')
+golpesound.set_volume(sonidodelgolpe)
+golsound = mixer.Sound('sonidogol.mp3')
+golsound.set_volume(0.2)
+silbatosound = mixer.Sound('silbato.mp3')
+botonsound = mixer.Sound('botonsonido.mp3')
+bichosound = mixer.Sound('bichosonido.mp3')
+bichosound.set_volume(0.3)
+botonsecundariosound = mixer.Sound('sonidobotonsecundario.mp3')
+powerupsound = mixer.Sound('powerupsound.mp3')
+powerupsound.set_volume(0.5)
+disapearsound = mixer.Sound('sonido de desaparecer.mp3')
+#botones imagenes
+botonmenucolorentradaoff = transform.scale(image.load('botonoff.png'), (110, 50))
+botonmenucolorentradaon = transform.scale(image.load('botonon.png'), (110,50 ))
+actualmenucolor = botonmenucolorentradaon
+botonmenunombreentradaoff = transform.scale(image.load('botonoff.png'), (160, 50))
+botonmenunombreentradaon = transform.scale(image.load('botonon.png'), (160,50 ))
+actualmenunombre = botonmenunombreentradaon
+botonmenujugadoresentradaoff = transform.scale(image.load('botonoff.png'), (200, 50))
+botonmenujugadoresentradaon = transform.scale(image.load('botonon.png'), (200,50 ))
+actualmenujugadores = botonmenujugadoresentradaon
+botonmenujugadoressalidaoff = transform.scale(image.load('botonoff.png'), (120, 50))
+botonmenujugadoressalidaon = transform.scale(image.load('botonon.png'), (120,50 ))
+actualmenujugadoressalida = botonmenujugadoressalidaon
+botonmenunombresalidaoff = transform.scale(image.load('botonoff.png'), (205, 50))
+botonmenunombresalidaon = transform.scale(image.load('botonon.png'), (205,50 ))
+actualmenunombresalida = botonmenunombresalidaon
+botonmenucolorsalidaoff = transform.scale(image.load('botonoff.png'), (100, 40))
+botonmenucolorsalidaon = transform.scale(image.load('botonon.png'), (100,40 ))
+actualmenucolorsalida = botonmenucolorsalidaon
+
+
+
+
+
+adelantar1 = True
+adelantar2 = True
+
+clock = time.Clock()
+r1posx = 50
+aceleracion1 = 0
+aceleracion2 = 0
+name1 = 'player1'
+name2 = 'player2'
+r1posy = 293
+r2posx = 740
+r2posy = 293
+raqueta = Rect(r1posx, r1posy, 5,15)
+raquetaa = Rect(r2posx, r2posy, 5,15)
+posypelota = 275
+posxpelota = random.randint(1,2)
+if posxpelota == 1:
+    posxpelota = 350
+if posxpelota == 2:
+    posxpelota = 400
+pospelotaini = posxpelota
+hitboxbalon = Rect(posxpelota, posypelota, 15,15)
+colision1 = False
+colision2 = False
+velballx = 4
+pelota1 = True
+pelota2 = False
+pelota3 = False
+pelotareal = pelota
+dir1 = 0
+dir2 = 0
+mostrartexto1 = False
+mostrartexto2 = False
+velbally = 0
+colisionypared = False
+habidopenaltis = False
+#creando 4 variables para el bot
+negro = (0, 0, 0)
+blanco = (255, 255, 255) 
+rojo = (255, 0, 0) 
+verde = (0, 255, 0) 
+azul = (0, 0, 255) 
+amarillo = (255, 255, 0)
+cian = (0, 255, 255)
+magenta = (255, 0, 255)
+morado = (128, 0, 128) 
+mueveadelante = False
+mueveatras = False
+muevearriba = False
+mueveabajo = False
+botatras = False
+botdelante = False
+botarriba = False
+botdebajo = False
+dificultad = 'intermedio'
+parametrodificultad = 30
+colorfacil = negro
+colorintermedio = amarillo
+colordificil = negro
+colorpesadilla = negro
+muestradificultad = False
+#creando variables de los poderes
+poder = False
+muestrapoderes = True
+colorbotonpoderes = rojo
+poder1 = False
+poder2 = False
+poder1disponible = True
+poder2disponible = True
+relojfijopoder1 = 0
+relojfijopoder2 = 0
+poderrulando1 = False
+poderrulando2 = False
+podertraspasarcampo1 = False
+podertraspasarcampo2 = False
+inmobil2 = False
+inmobil1 = False
+rosax1 = 50
+rosay1 = 293
+rosax2= 740
+rosay2 = 293
+
+#creando variables para la repeticion
+colormenuentradarepeticion = negro
+insertarvariablesderepeticion = True
+ganadorpararepeticion = 0
+#la variable de la pelota rebotadora 
+pelotadecoracionx = 370
+pelotadecoraciony = 270
+veldecox = 3
+veldecoy = 3
+aletaoriodeco = random.randint(1,4)
+if aletaoriodeco == 1:
+    pass
+if aletaoriodeco == 2:
+    veldecox = veldecox *-1
+    veldecoy = veldecoy *-1
+if aletaoriodeco == 3:
+    veldecox = veldecox *-1
+if aletaoriodeco == 4:
+    veldecoy = veldecoy *-1
+#relojh para que las letras parpadeen
+temporizadorletras = reloj()
+
+
+
+
+
+
+
+
+puntuacion1 = 0
+puntuacion2 = 0
+puntuaciontxt1 = str(puntuacion1)
+puntuaciontxt2 = str(puntuacion2)
+puntuaciontotal = puntuaciontxt1 + ' '+ '-'+ ' '+  puntuaciontxt2
+color1 = negro
+color2 = negro
+clicado = False
+cronoinicial = reloj()
+cronoini = cronoinicial
+colormenuillo = negro
+colorexit = negro
+penaltistirados = 0
+spawn1 = 50
+spawn2 = 740
+penalti = False
+fases = 0
+escoje1 = False
+escoje2 = False
+menucolor = negro
+colorescoje1 = blanco
+colorescoje2 = blanco
+colormenu3 = negro
+colorcirculojugador1 = negro
+colorcirculojugador2 = blanco
+colormenusalidajugadores = negro
+font1_1 = pygame.font.Font(None, 50)
+question = font1_1.render(puntuaciontotal, True, (255, 0, 0))
+juega1 = False
+juega2 = True
+#fondo fase 5
+colormenusalidanombre = negro
+def fondo5():
+    ventana.blit(fondo, (0,0))       
+    nombree1 = draw.rect(ventana, (negro), nombre1)
+    nombree2 = draw.rect(ventana, (negro), nombre2)
+    saliendodelmenu = draw.rect(ventana, (colormenusalidanombre), salirdelmenunombre)
+    ventana.blit(actualmenunombresalida, (595, 0))
+    letrasnombre1 = pygame.font.Font(None, 35)
+    nombreletras1 = letrasnombre1.render(
+    'Nombre1', True, (blanco))
+    ventana.blit(nombreletras1, (75, 275))
+    letrasmenusalida = pygame.font.Font(None, 35)
+    menusalidaletras = letrasmenusalida.render(
+    'Volver al menu', True, (rojo))
+    ventana.blit(menusalidaletras, (610, 10))
+    letrasnombre2 = pygame.font.Font(None, 35)
+    nombreletras2 = letrasnombre2.render(
+    'Nombre2', True, (blanco))
+    ventana.blit(nombreletras2, (625, 275))
+    letrasnombre1real = pygame.font.Font(None, 35)
+    nombreletras1real = letrasnombre1real.render(
+    name1, True, (negro))
+    ventana.blit(nombreletras1real, (75, 325))
+    letrasnombre2real = pygame.font.Font(None, 35)
+    nombreletras2real = letrasnombre2real.render(
+    name2, True, (negro))
+    ventana.blit(nombreletras2real, (625, 325))
+#texto
+fonta = pygame.font.Font(None, 24)
+text_color = (255, 255, 255)
+text_input = ""
+text_input_rect = Rect(50, 50, 700, 100)
+
+def mostrar_texto_editor():
+    draw.rect(ventana, (0, 0, 0), text_input_rect)
+    rendered_text = fonta.render(text_input, True, text_color)
+    ventana.blit(rendered_text, (text_input_rect.x + 5, text_input_rect.y + 5))
+variabletext = 0
+
+
+
+
+while rular == True:
+    events = event.get()
+    for e in events:
+        if e.type == QUIT:
+            rular = False
+    
+    name1txt = name1 +' ' + 'ha ganado'
+    name2txt = name2 + ' ' + 'ha ganado'
+            
+    
+
+
+
+    #intro
+    if fases == 0:
+        key_pressed = key.get_pressed()
+        ventana.blit(fondo, (0,0))  
+        #salir del menu
+        if key_pressed[K_SPACE]:
+            if juega2 == True:
+                if not poder:
+                    fases = 1
+                    cronoinicial = reloj()
+                    cronoini = cronoinicial
+                    silbatosound.play()
+                if poder:
+                    fases = 10
+                    cronoinicial = reloj()
+                    cronoini = cronoinicial
+                    silbatosound.play()
+            if juega1 == True:
+                fases = 8
+                cronoinicial = reloj()
+                cronoini = cronoinicial
+                silbatosound.play()
+        #creando y reiniciando las listas de la repeticion de gol y variables de esta
+        movimientosx1 = []
+        movimientosy1 = []
+        movimientosx2 = []
+        movimientosy2 = []
+        movimientospelotax = []
+        movimientospelotay = []
+        posiciondepelota = []
+        contadornumerosdelistas = -1
+        momentogol = []
+        golactivo = 1
+        ganadorpararepeticion = 0
+        #reiniciando todas las variables de los poderes
+        poder1 = False
+        poder2 = False
+        poder1disponible = True
+        poder2disponible = True
+        relojfijopoder1 = 0
+        relojfijopoder2 = 0
+        poderrulando1 = False
+        poderrulando2 = False
+        #adelantar false
+        adelantar1 = True
+        adelantar2 = True
+        #letras de bienvenida
+        fontintro = pygame.font.Font(None, 70)
+        introletras = fontintro.render(
+        'Bienvenido a fuchibol', True, (negro))
+        #haciendo que estas letras parpadeen
+        if reloj() - temporizadorletras < 1:
+            fontintro2 = pygame.font.Font(None, 70)
+            introletras2 = fontintro2.render(
+            'Presiona espacio para jugar', True, (negro))
+            ventana.blit(introletras2, (100, 500))
+        
+        if reloj() -temporizadorletras >2:
+            temporizadorletras = reloj()
+        
+        
+
+        ventana.blit(introletras, (150, 150))
+
+        #menu de colores y nombre
+        colormenu = Rect(0,0, 100,40)
+        colormenuu = draw.rect(ventana, (colormenuillo), colormenu)
+        letramenucolor = pygame.font.Font(None, 50)
+        letrascolormenu = letramenucolor.render(
+        'color', True, (rojo))
+        ventana.blit(actualmenucolor, (0,0))
+        ventana.blit(letrascolormenu, (15, 10))
+        #colision del raton con el boton y cambio de fase
+        if colormenu.collidepoint(mouse.get_pos()):
+            actualmenucolor = botonmenucolorentradaoff
+        else:
+            actualmenucolor = botonmenucolorentradaon
+        nombremenu = Rect(150,0, 140,40)
+        nombremenuu = draw.rect(ventana, (menucolor), nombremenu)
+        letrasmenunombre = pygame.font.Font(None, 50)
+        letrasnombremenu = letramenucolor.render(
+        'nombre', True, (rojo))
+        ventana.blit(actualmenunombre, (145, 0))
+        ventana.blit(letrasnombremenu, (160, 10))
+        #colision del raton con el boton y cambio de fase
+        if nombremenu.collidepoint(mouse.get_pos()):
+            actualmenunombre = botonmenunombreentradaoff
+        else:
+            actualmenunombre = botonmenunombreentradaon
+        for e in events:
+            if e.type == MOUSEBUTTONDOWN and colormenu.collidepoint(mouse.get_pos()):
+                fases = 2
+                botonsound.play()
+            if e.type == MOUSEBUTTONDOWN and nombremenu.collidepoint(mouse.get_pos()):
+                fases = 5
+                botonsound.play()
+        penalti = False
+        #menu de 1 o 2 jugadores
+        menujugadores = Rect(330, 0, 180, 40)
+        jugadoresmenu = draw.rect(ventana, (colormenu3), menujugadores)
+        letrasmenujugadores = pygame.font.Font(None, 50)
+        letrasjugadoresmenu = letrasmenujugadores.render(
+        'jugadores', True, (rojo))
+        ventana.blit(actualmenujugadores, (330, 0))
+        ventana.blit(letrasjugadoresmenu, (350, 8))
+        if menujugadores.collidepoint(mouse.get_pos()):
+            actualmenujugadores = botonmenujugadoresentradaoff
+        else:
+            actualmenujugadores = botonmenujugadoresentradaon
+        for e in events:
+            if e.type == MOUSEBUTTONDOWN and menujugadores.collidepoint(mouse.get_pos()):
+                fases = 7
+                botonsound.play()
+        #pelota rebotadora en el menu
+        ventana.blit(pelota, (pelotadecoracionx, pelotadecoraciony))
+        pelotadecoracionx += veldecox
+        pelotadecoraciony += veldecoy
+        if pelotadecoraciony > 569 or pelotadecoraciony < -22:
+            veldecoy = veldecoy * -1
+        if pelotadecoracionx > 769 or pelotadecoracionx < -22:
+            veldecox = veldecox * -1
+        #reiniciando habidopenales
+        habidopenaltis = False
+        
+        
+    if fases == 2:
+        ventana.blit(fondo, (0,0))
+        #salir del menu
+        colormenuexit = Rect(700,0, 100,40)
+        colormenuuexit = draw.rect(ventana, (colorexit), colormenuexit)
+        ventana.blit(actualmenucolorsalida, (700,0))
+        letramenucolorexit = pygame.font.Font(None, 40)
+        letrascolormenuexit = letramenucolorexit.render('menu', True, (rojo))
+        ventana.blit(letrascolormenuexit, (710, 5))
+        #colision del raton con el boton y cambio de fase
+        if colormenuexit.collidepoint(mouse.get_pos()):
+            actualmenucolorsalida = botonmenucolorsalidaoff
+        else:
+            actualmenucolorsalida = botonmenucolorsalidaon
+        for e in events:
+            if e.type == MOUSEBUTTONDOWN and colormenuexit.collidepoint(mouse.get_pos()):
+                fases = 0
+                botonsound.play()
+        #cuadrados para elegir color
+        negri = Rect(100,50, 50,20)
+        negrin = draw.rect(ventana, (negro), negri)
+        blanqui = Rect(300,50, 50,20)
+        blanquin = draw.rect(ventana, (blanco), blanqui)
+        roji = Rect(500,50, 50,20)
+        rojin = draw.rect(ventana, (rojo), roji)
+        verdi = Rect(700,50, 50,20)
+        verdin = draw.rect(ventana, (verde), verdi)
+        azuli = Rect(100,550, 50,20)
+        azulin = draw.rect(ventana, (azul), azuli)
+        amarilli = Rect(300,550, 50,20)
+        amarillin = draw.rect(ventana, (amarillo), amarilli)
+        ciani = Rect(500,550, 50,20)
+        cianin = draw.rect(ventana, (cian), ciani)
+        magenti = Rect(700,550, 50,20)
+        magentin = draw.rect(ventana, (magenta), magenti)   
+        #creando bordes de los cuadrados de los jugadores
+        if colorescoje1 == negro:
+            bordecuadradocolor1 = Rect(170, 195, 130, 40)
+            draw.rect(ventana, verde, bordecuadradocolor1)
+        if colorescoje2 == negro:
+            bordecuadradocolor2 = Rect(520, 195, 130, 40)
+            draw.rect(ventana, verde, bordecuadradocolor2)
+        
+        #cuadrados de jugador + ejemplo de su color
+        player1 = Rect(200,300, 50,20)
+        player11 = draw.rect(ventana, (color1), player1) 
+        player2 = Rect(550,300, 50,20)
+        player22 = draw.rect(ventana, (color2), player2)              
+        player1txt = Rect(175,200, 120,30)
+        player11txt = draw.rect(ventana, (colorescoje1), player1txt) 
+        player2txt = Rect(525,200, 120,30)
+        player22txt = draw.rect(ventana, (colorescoje2), player2txt)
+        letraplayer1 = pygame.font.Font(None, 35)
+        letrasplayer11 = letraplayer1.render(
+        'jugador 1', True, (rojo))
+        ventana.blit(letrasplayer11, (180, 200))
+        letraplayer2 = pygame.font.Font(None, 35)
+        letrasplayer22 = letraplayer2.render(
+        'jugador 2', True, (rojo))
+        ventana.blit(letrasplayer22, (530, 200))
+        
+        #colision con el cuadrado del jugador
+        for e in events:
+            if e.type == MOUSEBUTTONDOWN and player1txt.collidepoint(mouse.get_pos()):
+                escoje1 = True
+                escoje2 = False
+                colorescoje1 = negro
+                colorescoje2 = blanco
+                botonsecundariosound.play()
+            if e.type == MOUSEBUTTONDOWN and player2txt.collidepoint(mouse.get_pos()):
+                escoje2 = True
+                escoje1 = False
+                colorescoje2 = negro
+                colorescoje1 = blanco
+                botonsecundariosound.play()
+            if escoje1 == True:
+                if e.type == MOUSEBUTTONDOWN and negri.collidepoint(mouse.get_pos()):
+                    color1 = negro
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and blanqui.collidepoint(mouse.get_pos()):
+                    color1 = blanco
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and roji.collidepoint(mouse.get_pos()):
+                    color1 = rojo
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and verdi.collidepoint(mouse.get_pos()):
+                    color1 = verde
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and azuli.collidepoint(mouse.get_pos()):
+                    color1 = azul
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and amarilli.collidepoint(mouse.get_pos()):
+                    color1 = amarillo
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and ciani.collidepoint(mouse.get_pos()):
+                    color1 = cian
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and magenti.collidepoint(mouse.get_pos()):
+                    color1 = magenta
+                    botonsecundariosound.play()
+            if escoje2 == True:
+                if e.type == MOUSEBUTTONDOWN and negri.collidepoint(mouse.get_pos()):
+                    color2 = negro
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and blanqui.collidepoint(mouse.get_pos()):
+                    color2 = blanco
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and roji.collidepoint(mouse.get_pos()):
+                    color2 = rojo
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and verdi.collidepoint(mouse.get_pos()):
+                    color2 = verde
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and azuli.collidepoint(mouse.get_pos()):
+                    color2 = azul
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and amarilli.collidepoint(mouse.get_pos()):
+                    color2 = amarillo
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and ciani.collidepoint(mouse.get_pos()):
+                    color2 = cian
+                    botonsecundariosound.play()
+                if e.type == MOUSEBUTTONDOWN and magenti.collidepoint(mouse.get_pos()):
+                    color2 = magenta
+                    botonsecundariosound.play()
+
+
+
+
+
+
+    if fases == 1:
+        
+
+        
+        orientacion1 = r1posy - posypelota
+        orientacion2 = r2posy - posypelota
+        if orientacion1 == 18:
+            dir1 = 'recto'
+        if orientacion1 > 18:
+            dir1 = 'arriba'
+        if orientacion1 < 18:
+            dir1 = 'abajo'
+        if orientacion2 == 18:
+            dir2 = 'recto'
+        if orientacion2 > 18:
+            dir2 = 'arriba'
+        if orientacion2 < 18:
+            dir2 = 'abajo'
+
+        hitboxbalon = Rect(posxpelota + 18, posypelota + 17, 15,15)    
+        hitboxpelota = draw.rect(ventana, (0,0,0), hitboxbalon)    
+    
+        ventana.blit(fondo, (0,0))
+        ventana.blit(pelotareal,(posxpelota,posypelota))
+    
+        #repeticion
+        movimientosx1.append(r1posx)
+        movimientosy1.append(r1posy)
+        movimientosx2.append(r2posx)
+        movimientosy2.append(r2posy)
+        movimientospelotax.append(posxpelota)
+        movimientospelotay.append(posypelota) 
+        posiciondepelota.append(pelotareal)
+        contadornumerosdelistas += 1
+        insertarvariablesderepeticion = True
+
+        
+        #golpe fuerte
+        if aceleracion2 > 50:
+            recuadrogolpefuerte1 = Rect(r1posx -1, r1posy-1, 7, 17)
+            draw.rect(ventana, (morado), recuadrogolpefuerte1)
+        if aceleracion1 > 50:
+            recuadrogolpefuerte2 = Rect(r2posx -1, r2posy-1, 7, 17)
+            draw.rect(ventana, (morado), recuadrogolpefuerte2)
+
+        #dibujar jugadores
+        raqueta = Rect(r1posx, r1posy, 5,15)
+        raquetaa = Rect(r2posx, r2posy, 5,15)
+        raqueta1 = draw.rect(ventana, (color1), raqueta)
+        raqueta2 = draw.rect(ventana, (color2), raquetaa)
+        #movimiento
+
+        if adelantar1 == True:
+            if key_pressed[K_LEFT] and r2posx > 407 or key_pressed[K_LEFT] and penalti:
+                r2posx -= veljugador2
+                aceleracion1 += 1
+            else:
+                aceleracion1 = 0
+        if adelantar1 == True:
+            if key_pressed[K_RIGHT] and r2posx < 763 and not penalti or key_pressed[K_RIGHT] and penalti and r2posx < 250:
+                r2posx += veljugador2  
+        if key_pressed[K_UP] and r2posy > 31:
+            r2posy -= veljugador2
+        if key_pressed[K_DOWN] and r2posy < 555:
+            r2posy += veljugador2    
+        if adelantar2 == True:
+            if key_pressed[K_a] and r1posx > 32 and not penalti or key_pressed[K_a] and penalti and r1posx > 546:
+                r1posx -= veljugador1
+        if adelantar2 == True:
+            if key_pressed[K_d] and r1posx < 389 or key_pressed[K_d] and penalti:
+                r1posx += veljugador1
+                aceleracion2 += 1
+            else:
+                aceleracion2 = 0  
+        if key_pressed[K_w] and r1posy > 31:
+            r1posy -= veljugador1
+        if key_pressed[K_s] and r1posy < 555:
+            r1posy += veljugador1
+        #movimiento balon
+        if raqueta.colliderect(hitboxbalon) or posxpelota < 0 and posypelota >= 309 or posypelota <= 241 and posxpelota < 0:
+            colision1 = True
+            colision2 = False
+            if raqueta.colliderect(hitboxbalon):
+                velballx = 4 + aceleracion2 * 0.02
+            else:
+                velballx = 4 
+            golpesound.play()
+        if raquetaa.colliderect(hitboxbalon) or posxpelota > 740 and posypelota >= 309 or posypelota <= 241 and posxpelota > 740:
+            colision1 = False
+            colision2 = True
+            if raquetaa.colliderect(hitboxbalon):
+                velballx = 4 + aceleracion1 * 0.02
+            else:
+                velballx = 4 
+            golpesound.play()
+        if colision1:
+            posxpelota += velballx
+            posypelota += velbally
+            if pelotareal == pelota:
+                pelota1 = False
+                pelota2 = True    
+            else:
+                pelota2 = False
+                pelota1 = True
+
+        if colision2:
+            posxpelota -= velballx
+            posypelota += velbally
+            if pelotareal == pelota:
+                pelota1 = False
+                pelota2 = True    
+            else:
+                pelota2 = False
+                pelota1 = True
+    #gol
+        if penalti == False:
+            if posypelota <309 and posypelota > 241 and posxpelota < 0:
+                colision2 = False
+                colision1 = False
+                posxpelota = 350
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = spawn1
+                r1posy = 293
+                r2posx = spawn2
+                r2posy = 293
+                puntuacion2 += 1
+                golsound.play()
+                #repeticion gol
+                momentogol.append(contadornumerosdelistas)
+        if penalti == False:
+            if posypelota <309 and posypelota > 241 and posxpelota > 740:
+                colision2 = False
+                colision1 = False
+                posxpelota = 400
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = spawn1
+                r1posy = 293
+                r2posx = spawn2
+                r2posy = 293
+                puntuacion1 += 1
+                golsound.play()
+                #repeticiongol
+                momentogol.append(contadornumerosdelistas)
+        orientacion1calculo = orientacion1 - 18
+        orientacion2calculo = orientacion2 - 18
+
+        #rebotey
+        if penalti == False:
+            if raqueta.colliderect(hitboxbalon):
+                velbally = 0
+                if dir1 == 'abajo':
+                    velbally = 1 - orientacion1calculo * 0.075
+                if dir1 == 'arriba':
+                    velbally = -1 - orientacion1calculo * 0.075
+            if raquetaa.colliderect(hitboxbalon):
+                velbally = 0
+                if dir2 == 'abajo':
+                    velbally = 1 - orientacion2calculo * 0.075
+                if dir2 == 'arriba':
+                    velbally = -1 - orientacion2calculo * 0.075
+            if posypelota < 0:
+                velbally = velbally * -1
+            if posypelota> 540:
+                velbally = velbally * -1
+        if penalti == True:
+            if raqueta.colliderect(hitboxbalon):
+                velbally = 0
+                if dir1 == 'abajo':
+                    velbally = 0.5 - orientacion1calculo * 0.035
+                if dir1 == 'arriba':
+                    velbally = -0.5 - orientacion1calculo * 0.035
+            if raquetaa.colliderect(hitboxbalon):
+                velbally = 0
+                if dir2 == 'abajo':
+                    velbally = 0.5 - orientacion2calculo * 0.035
+                if dir2 == 'arriba':
+                    velbally = -0.5 - orientacion2calculo * 0.035 
+            if posypelota < 0:
+                velbally = velbally * -1
+            if posypelota> 540:
+                velbally = velbally * -1
+
+            
+        #animacion de pelota
+        if pelota1 == True:
+            pelotareal = pelota
+        if pelota2 == True:
+            pelotareal = pelota30
+        #cuadrados
+        ventana.blit(marcador, (310,0))
+
+
+        #puntuacion
+
+        puntuaciontxt1 = str(puntuacion1)
+        puntuaciontxt2 = str(puntuacion2)
+        puntuaciontotal = puntuaciontxt1 + ' '+ '-'+ ' '+  puntuaciontxt2
+        font1_1 = pygame.font.Font(None, 30)
+        puntuacion = font1_1.render(
+        puntuaciontotal, True, (negro))
+        ventana.blit(puntuacion, (340, 7))
+
+        #CRONO
+        cronobueno = cronoinicial -cronoini
+        cronobuenoaprox = round(cronobueno,2)
+        cronobuenisimo = str(cronobuenoaprox)
+        cronoinicial = reloj()
+        font1_2 = pygame.font.Font(None, 30)
+        puntuacion = font1_2.render(
+        cronobuenisimo, True, (negro))
+        cronobuenoaproxmas = round(cronobuenoaprox)
+        if penalti == False:
+            ventana.blit(puntuacion, (455, 7)) 
+
+
+        #primera parte
+        if cronobuenoaproxmas == 45:
+            colision2 = False
+            colision1 = False
+            silbatosound.play()
+            if pospelotaini == 400:
+                posxpelota = 350
+            else:
+                posxpelota = 400
+            posypelota = 275
+            pelotareal = pelota
+            r1posx = 50
+            r1posy = 293
+            r2posx = 740
+            r2posy = 293
+        
+ 
+    #segunda parte(penaltis)
+
+        if cronobuenoaproxmas == 90 and puntuacion1 == puntuacion2:
+            penalti = True      
+            colision2 = False
+            colision1 = False
+            pelotareal = pelota
+            posxpelota = 600
+            posypelota = 275
+            r1posx = 600
+            r1posy = 293
+            r2posx = 764
+            r2posy = 293
+            silbatosound.play()
+            adelantar1 = False
+            puntuacion1 = 0
+            puntuacion2 = 0
+
+            
+            
+        if penalti == True:
+            if posypelota <309 and posypelota > 241 and posxpelota < 0:
+                colision2 = False
+                colision1 = False
+                posxpelota = 600
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 600
+                r1posy = 293
+                r2posx = 764
+                r2posy = 293
+                puntuacion2 += 1
+                penaltistirados += 1
+                golsound.play()
+                adelantar1 = False
+                adelantar2 = True
+        if penalti == True:
+            if posypelota <309 and posypelota > 241 and posxpelota > 740:
+                colision2 = False
+                colision1 = False
+                posxpelota = 150
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 32
+                r1posy = 293
+                r2posx = 198
+                r2posy = 293
+                puntuacion1 += 1   
+                golsound.play() 
+                adelantar2 = False
+                adelantar1 = True
+        if penalti == True:
+            if posxpelota < 400 and colision1 == True:
+                colision2 = False
+                colision1 = False
+                posxpelota = 600
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 600
+                r1posy = 293
+                r2posx = 764
+                r2posy = 293
+                penaltistirados += 1
+                adelantar1 = False
+                adelantar2 = True
+
+         
+        if penalti == True:
+            if posxpelota > 400 and colision2 == True:
+                colision2 = False
+                colision1 = False
+                posxpelota = 150
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 32
+                r1posy = 293
+                r2posx = 198
+                r2posy = 293
+                adelantar2 = False
+                adelantar1 = True
+
+        if cronobuenoaproxmas >= 90 and puntuacion1 > puntuacion2 and penalti == False:
+            fases = 3
+            bichosound.play()
+        if cronobuenoaproxmas >= 90 and puntuacion1 < puntuacion2 and penalti == False:
+            fases = 4
+            bichosound.play()
+        if penalti == True and penaltistirados == 5:
+            if puntuacion1 > puntuacion2:
+                fases = 3
+                bichosound.play()
+            if puntuacion2 > puntuacion1:
+                fases = 4
+                bichosound.play()
+            else:
+                penaltistirados -= 1
+
+
+
+        #arreglando el bug del sonido de colision
+        if colision1:
+            if hitboxbalon.colliderect(raqueta):
+                sonidodelgolpe = 0.0
+            else:
+                sonidodelgolpe = 1.0
+        if colision2:
+            if hitboxbalon.colliderect(raquetaa):
+                sonidodelgolpe = 0.0
+            else:
+                sonidodelgolpe = 1.0       
+        #añadiendo lo de han habido penales
+        if penalti:
+            habidopenaltis = True
+    
+    
+    
+    
+    
+    if fases == 3:
+
+        #ir al menu
+        if key_pressed[K_1]:
+            fases = 0
+        fontintro = pygame.font.Font(None, 70)
+        introletras = fontintro.render(
+        name1txt, True, (negro))
+        fontintro2 = pygame.font.Font(None, 50)
+        introletras2 = fontintro2.render(
+        'Presiona 1 para volver al menu', True, (negro))
+
+        ventana.blit(fondo, (0,0))       
+        ventana.blit(introletras, (250, 300))
+        ventana.blit(introletras2, (180, 500))
+        #reinicio
+        puntuacion1 = 0
+        puntuacion2 = 0
+        penalti = False
+        penaltistirados = 0
+        cronobueno = 0
+        r1posx = 50
+        r1posy = 293
+        r2posx = 740
+        r2posy = 293
+        posypelota = 275
+        posxpelota = random.randint(1,2)
+        if posxpelota == 1:
+            posxpelota = 350
+        if posxpelota == 2:
+            posxpelota = 400
+        colision1 = False
+        colision2 = False
+        velbally = 0
+        velballx  = 4
+        cronobuenoaproxmas = 0
+        #boton para repeticiones
+        if not habidopenaltis:
+            irmenurepeticion = Rect(0,0,400,50)
+            dibujarirmenurepeticion = draw.rect(ventana, colormenuentradarepeticion, irmenurepeticion)
+            fontentradarepeticiones = pygame.font.Font(None, 40)
+            introrepeticionletras = fontentradarepeticiones.render(
+            'Repeticiones de los goles', True, (rojo))
+            ventana.blit(introrepeticionletras, (10,0))
+            if irmenurepeticion.collidepoint(mouse.get_pos()):
+                colormenuentradarepeticion = blanco
+            else:
+                colormenuentradarepeticion = negro
+            for e in events:
+                if e.type == MOUSEBUTTONDOWN and irmenurepeticion.collidepoint(mouse.get_pos()):
+                    fases = 9
+                    botonsound.play()
+            ganadorpararepeticion = 1
+            insertarvariablesderepeticion = True
+
+
+
+
+
+
+    if fases == 4:
+        key_pressed = key.get_pressed()
+        #ir al menu
+        if key_pressed[K_1]:
+            fases = 0
+        fontintro = pygame.font.Font(None, 70)
+        introletras = fontintro.render(
+        name2txt, True, (negro))
+        fontintro2 = pygame.font.Font(None, 50)
+        introletras2 = fontintro2.render(
+        'Presiona 1 para volver al menu', True, (negro))
+        
+        ventana.blit(fondo, (0,0))       
+        ventana.blit(introletras, (250, 300))
+        ventana.blit(introletras2, (180, 500))
+        #reinicio
+        puntuacion1 = 0
+        puntuacion2 = 0
+        penalti = False
+        penaltistirados = 0
+        cronobueno = 0
+        r1posx = 50
+        r1posy = 293
+        r2posx = 740
+        r2posy = 293
+        posypelota = 275
+        posxpelota = random.randint(1,2)
+        if posxpelota == 1:
+            posxpelota = 350
+        if posxpelota == 2:
+            posxpelota = 400 
+        colision1 = False
+        colision2 = False
+        velballx = 4
+        velbally = 0
+        cronobuenoaproxmas = 0
+        #boton para repeticiones
+        if not habidopenaltis:
+            irmenurepeticion = Rect(0,0,400,50)
+            dibujarirmenurepeticion = draw.rect(ventana, colormenuentradarepeticion, irmenurepeticion)
+            fontentradarepeticiones = pygame.font.Font(None, 40)
+            introrepeticionletras = fontentradarepeticiones.render(
+            'Repeticiones de los goles', True, (rojo))
+            ventana.blit(introrepeticionletras, (10,0))
+            if irmenurepeticion.collidepoint(mouse.get_pos()):
+                colormenuentradarepeticion = blanco
+            else:
+                colormenuentradarepeticion = negro
+            for e in events:
+                if e.type == MOUSEBUTTONDOWN and irmenurepeticion.collidepoint(mouse.get_pos()):
+                    fases = 9
+                    botonsound.play()
+            ganadorpararepeticion = 2
+            insertarvariablesderepeticion = True
+  
+  
+  
+  
+  
+    if fases == 5:
+        key_pressed = key.get_pressed()
+        nombre1 = Rect(50, 275, 150, 30)
+        nombre2 = Rect(600, 275, 150, 30)
+        salirdelmenunombre = Rect(600, 0, 200, 50)
+        if mostrartexto1 == False and mostrartexto2 == False:
+            fondo5()
+        #textoeditor
+        for e in events:
+            if salirdelmenunombre.collidepoint(mouse.get_pos()):
+                actualmenunombresalida = botonmenunombresalidaoff
+            else:
+                actualmenunombresalida = botonmenunombresalidaon
+            if nombre1.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                mostrartexto1 = True
+                botonsecundariosound.play()
+            if nombre2.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                mostrartexto2 = True
+                botonsecundariosound.play()
+            if salirdelmenunombre.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                fases = 0
+                botonsound.play()
+            if mostrartexto1 == True:
+                ventana.blit(fondo,(0,0))
+                for e in events:
+                    if e.type == QUIT:
+                        quit()
+                        exit()
+                    elif e.type == KEYDOWN:
+                        if e.key == K_RETURN:
+                            name1 = text_input
+                            text_input = ""
+                            mostrartexto1 = False
+                        elif e.key == K_BACKSPACE:
+                            text_input = text_input[:-1]
+        
+                    # Si el evento es de entrada de texto (TextInput),
+                    # agregamos el texto ingresado al string de entrada.
+                    elif e.type == TEXTINPUT:
+                        text_input += e.text
+                        variabletext += 1
+                        if variabletext == 2:
+                            variabletext = 0
+                            text_input = text_input[:-1]
+                        
+                mostrar_texto_editor()
+            if mostrartexto2 == True:
+                ventana.blit(fondo,(0,0))
+                for e in events:
+                    if e.type == QUIT:
+                        quit()
+                        exit()
+                    elif e.type == KEYDOWN:
+                        if e.key == K_RETURN:
+                            name2 = text_input
+                            text_input = ""
+                            mostrartexto2 = False
+                        elif e.key == K_BACKSPACE:
+                            text_input = text_input[:-1]
+        
+                    # Si el evento es de entrada de texto (TextInput),
+                    # agregamos el texto ingresado al string de entrada.
+                    elif e.type == TEXTINPUT:
+                        text_input += e.text
+                        variabletext += 1
+                        if variabletext == 2:
+                            variabletext = 0
+                            text_input = text_input[:-1]
+                        
+                mostrar_texto_editor()
+
+       
+
+
+
+
+
+
+
+
+
+
+
+
+    if fases == 7:
+        #diseño ventana
+        salidadelmenujugadores = Rect(0,0,120, 40)
+        salidamenujugadores = draw.rect(ventana, colormenusalidajugadores, salidadelmenujugadores)
+        ventana.blit(fondo, (0,0))
+        rectangulo1jugador = Rect(100, 250, 200, 100)
+        rectangulo2jugador = Rect(500, 250, 200, 100)
+        bordederectangulojugador1 = Rect(95, 245, 210, 110)
+        bordederectangulojugador2 = Rect(495, 245, 210, 110)
+        ventana.blit(actualmenujugadoressalida, (0,0))
+        fontmenusalidajugador = pygame.font.Font(None, 50)
+        letrasmenusalidajugador = fontmenusalidajugador.render(
+        'salida', True, (rojo))
+
+    
+
+        if salidadelmenujugadores.collidepoint(mouse.get_pos()):
+            actualmenujugadoressalida = botonmenujugadoressalidaoff
+        else:
+            actualmenujugadoressalida = botonmenujugadoressalidaon
+        for e in events:
+            if salidadelmenujugadores.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                fases = 0
+                botonsound.play()
+        ventana.blit(letrasmenusalidajugador, (10,10))  
+        #click en botones
+        for e in events:
+            if rectangulo1jugador.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                colorcirculojugador1 = blanco
+                colorcirculojugador2 = negro
+                juega1 = True
+                juega2 = False
+                muestradificultad = True
+                muestrapoderes = False
+                botonsecundariosound.play()
+            if rectangulo2jugador.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                colorcirculojugador2 = blanco
+                colorcirculojugador1 = negro        
+                botonsecundariosound.play()
+                juega2 = True
+                juega1 = False
+                muestradificultad = False
+                muestrapoderes = True
+        #poniendo bordes a los rectangulos
+        if colorcirculojugador1 == blanco:
+            draw.rect(ventana, verde, bordederectangulojugador1)
+        if colorcirculojugador2 == blanco:
+            draw.rect(ventana, verde , bordederectangulojugador2)
+        #dibujando los rectangulos principales
+        rectangulojugador1 = draw.rect(ventana, colorcirculojugador1, rectangulo1jugador)
+        rectangulojugador2 = draw.rect(ventana, colorcirculojugador2, rectangulo2jugador)
+        #Mas diseño
+        font1jugador = pygame.font.Font(None, 50)
+        letras1jugador = font1jugador.render(
+        '1 jugador', True, (negro))
+        ventana.blit(letras1jugador, (120, 200))
+        font2jugador = pygame.font.Font(None, 50)
+        letras2jugador = font2jugador.render(
+        '2 jugadores', True, (negro))
+        ventana.blit(letras2jugador, (520, 200))  
+        #dificultad
+        if muestradificultad:
+            #rectangulos
+            facil = Rect(100, 400, 100, 100)
+            facill = draw.rect(ventana, colorfacil, facil)
+            intermedio = Rect(250, 400, 100, 100)
+            intermedioo = draw.rect(ventana, colorintermedio, intermedio)
+            dificil = Rect(400, 400, 100, 100)
+            dificill = draw.rect(ventana, colordificil, dificil)
+            pesadilla = Rect(550, 400, 100, 100)
+            pesadillaa = draw.rect(ventana, colorpesadilla, pesadilla)
+            #letras
+            fontfacil = pygame.font.Font(None, 40)
+            letrasfacil = fontfacil.render('Fácil', True, (negro))
+            ventana.blit(letrasfacil, (120, 510))        
+            fontintermedio = pygame.font.Font(None, 40)
+            letrasintermedio = fontintermedio.render('Intermedio', True, (negro))
+            ventana.blit(letrasintermedio, (240, 510))
+            fontdificil = pygame.font.Font(None, 40)
+            letrasdificil = fontdificil.render('Difícil', True, (negro))
+            ventana.blit(letrasdificil, (410, 510))
+            fontpesadilla = pygame.font.Font(None, 40)
+            letraspesadilla = fontpesadilla.render('Pesadilla', True, (negro))
+            ventana.blit(letraspesadilla, (540, 510))
+            #funcionalidad dificultades
+            for e in events:
+                if facil.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                    colorfacil = verde
+                    colorintermedio = negro
+                    colordificil = negro
+                    colorpesadilla = negro
+                    botonsecundariosound.play()
+                    dificultad = 'facil'
+                if intermedio.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                    colorfacil = negro
+                    colorintermedio = amarillo
+                    colordificil = negro
+                    colorpesadilla = negro
+                    botonsecundariosound.play()
+                    dificultad = 'intermedio'
+                if dificil.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                    colorfacil = negro
+                    colorintermedio = negro
+                    colordificil = rojo
+                    colorpesadilla = negro
+                    botonsecundariosound.play()
+                    dificultad = 'dificil'
+                if pesadilla.collidepoint(mouse.get_pos()) and e.type == MOUSEBUTTONDOWN:
+                    colorfacil = negro
+                    colorintermedio = negro
+                    colordificil = negro
+                    colorpesadilla = morado
+                    botonsecundariosound.play()
+                    dificultad = 'pesadilla'                
+        if muestrapoderes:
+            #dibujo el cuadrado
+            onoffpoderesboton = Rect(550,400, 100, 100)
+            draw.rect(ventana, colorbotonpoderes, onoffpoderesboton)
+            #click + cambio de variables + cambio de color y sonido
+            for e in events:
+                if e.type == MOUSEBUTTONDOWN and onoffpoderesboton.collidepoint(mouse.get_pos()):
+                    botonsecundariosound.play()
+                    
+                    if not poder:
+                        colorbotonpoderes = verde
+                        poder = True
+                    elif poder:
+                        colorbotonpoderes = rojo
+                        poder = False
+            #letras para diseño
+            fontpoder = pygame.font.Font(None, 40)
+            letraspoder = fontpoder.render('Poderes', True, (negro))
+            ventana.blit(letraspoder, (545, 370))        
+            
+            
+ 
+ 
+ 
+        
+    if fases == 8:
+
+        
+        orientacion1 = r1posy - posypelota 
+        orientacion2 = r2posy - posypelota
+        if orientacion1 == 18:
+            dir1 = 'recto'
+        if orientacion1 > 18:
+            dir1 = 'arriba'
+        if orientacion1 < 18:
+            dir1 = 'abajo'
+        if orientacion2 == 18:
+            dir2 = 'recto'
+        if orientacion2 > 18:
+            dir2 = 'arriba'
+        if orientacion2 < 18:
+            dir2 = 'abajo'
+        
+        #hacemos que el bot indentifique cuando moverse
+        
+        
+        
+        hitboxbalon = Rect(posxpelota + 18, posypelota + 17, 15,15)    
+        hitboxpelota = draw.rect(ventana, (0,0,0), hitboxbalon)    
+    
+        ventana.blit(fondo, (0,0))
+        ventana.blit(pelotareal,(posxpelota,posypelota))
+    
+    
+    
+        #repeticion
+        movimientosx1.append(r1posx)
+        movimientosy1.append(r1posy)
+        movimientosx2.append(r2posx)
+        movimientosy2.append(r2posy)
+        movimientospelotax.append(posxpelota)
+        movimientospelotay.append(posypelota) 
+        posiciondepelota.append(pelotareal)
+        contadornumerosdelistas += 1
+        #golpe fuerte
+        if aceleracion2 > 50:
+            recuadrogolpefuerte1 = Rect(r1posx -1, r1posy-1, 7, 17)
+            draw.rect(ventana, (morado), recuadrogolpefuerte1)
+        if aceleracion1 > 50:
+            recuadrogolpefuerte2 = Rect(r2posx -1, r2posy-1, 7, 17)
+            draw.rect(ventana, (morado), recuadrogolpefuerte2)
+        #creando los jugadores
+        raqueta = Rect(r1posx, r1posy, 5,15)
+        raquetaa = Rect(r2posx, r2posy, 5,15)
+        raqueta1 = draw.rect(ventana, (color1), raqueta)
+        raqueta2 = draw.rect(ventana, (color2), raquetaa)
+        #movimiento
+
+        if adelantar1 == True:
+            if mueveadelante and r2posx > 407 or mueveadelante and penalti == True and adelantar1 == True:
+                r2posx -= veljugador2
+                aceleracion1 += 1
+            else:
+                aceleracion1 = 0
+        if adelantar1 == True:
+            if mueveatras and r2posx < 763 or mueveatras and penalti == True:
+                r2posx += veljugador2  
+        if muevearriba and r2posy > 31:
+            r2posy -= veljugador2
+        if mueveabajo and r2posy < 555:
+            r2posy += veljugador2    
+        if adelantar2 == True:
+            if key_pressed[K_a] and r1posx > 32 and not penalti or key_pressed[K_a] and penalti and r1posx > 546:
+                r1posx -= veljugador1
+        if adelantar2 == True:
+            if key_pressed[K_d] and r1posx < 389 or key_pressed[K_d] and penalti == True and adelantar2 == True:
+                r1posx += veljugador1
+                aceleracion2 += 1
+            else:
+                aceleracion2 = 0  
+        if key_pressed[K_w] and r1posy > 31:
+            r1posy -= veljugador1
+        if key_pressed[K_s] and r1posy < 555:
+            r1posy += veljugador1
+        #movimiento balon
+        if raqueta.colliderect(hitboxbalon) or posxpelota < 0 and posypelota >= 309 or posypelota <= 241 and posxpelota < 0:
+            colision1 = True
+            colision2 = False
+            if raqueta.colliderect(hitboxbalon):
+                velballx = 4 + aceleracion2 * 0.02
+            else:
+                velballx = 4 
+            golpesound.play()
+        if raquetaa.colliderect(hitboxbalon) or posxpelota > 740 and posypelota >= 309 or posypelota <= 241 and posxpelota > 740:
+            colision1 = False
+            colision2 = True
+            if raquetaa.colliderect(hitboxbalon):
+                velballx = 4 + aceleracion1 * 0.02
+            else:
+                velballx = 4 
+            golpesound.play()
+        if colision1:
+            posxpelota += velballx
+            posypelota += velbally
+            if pelotareal == pelota:
+                pelota1 = False
+                pelota2 = True    
+            else:
+                pelota2 = False
+                pelota1 = True
+        if colision2:
+            posxpelota -= velballx
+            posypelota += velbally
+            if pelotareal == pelota:
+                pelota1 = False
+                pelota2 = True    
+            else:
+                pelota2 = False
+                pelota1 = True
+
+    #gol
+        if penalti == False:
+            if posypelota <309 and posypelota > 241 and posxpelota < 0:
+                colision2 = False
+                colision1 = False
+                posxpelota = 350
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = spawn1
+                r1posy = 293
+                r2posx = spawn2
+                r2posy = 293
+                puntuacion2 += 1
+                golsound.play()
+                #repeticiongol
+                momentogol.append(contadornumerosdelistas)
+        if penalti == False:
+            if posypelota <309 and posypelota > 241 and posxpelota > 740:
+                colision2 = False
+                colision1 = False
+                posxpelota = 400
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = spawn1
+                r1posy = 293
+                r2posx = spawn2
+                r2posy = 293
+                puntuacion1 += 1
+                golsound.play()
+                #repeticiongol
+                momentogol.append(contadornumerosdelistas)
+        orientacion1calculo = orientacion1 - 18
+        orientacion2calculo = orientacion2 - 18
+        
+        #botorientando
+        orientacionx = r2posx - posxpelota
+        orientaciony = orientacion2calculo
+        if dificultad == 'intermedio':
+            parametrodificultad = 30
+        if dificultad == 'facil':
+            parametrodificultad = 50
+        if dificultad == 'dificil':
+            parametrodificultad = 20
+        if dificultad == 'pesadilla':
+            parametrodificultad = 17
+        mueveabajo = False
+        muevearriba = False
+        mueveadelante = False
+        mueveatras = False
+        if orientacionx > 30:
+            mueveadelante = True
+        else:
+            mueveadelante = False
+
+        if orientaciony > parametrodificultad:
+            muevearriba = True
+        else:
+            muevearriba = False
+        if orientaciony < -parametrodificultad:
+            mueveabajo = True
+        else:
+            mueveabajo = False
+        if  orientaciony < parametrodificultad and orientaciony > -parametrodificultad:
+            randombot = random.randint(1,2)
+            if randombot == 1:
+                muevearriba = True
+            if randombot == 2:
+                mueveabajo = True
+        if orientaciony == 0 and penalti == False:
+            muevearriba = False
+            mueveabajo = False
+            
+        if orientacionx < 30:
+            mueveatras = True
+        else:
+            mueveatras = False
+
+
+        
+        
+        
+        
+        #rebotey
+        if penalti == False:
+            if raqueta.colliderect(hitboxbalon):
+                velbally = 0
+                if dir1 == 'abajo':
+                    velbally = 1 - orientacion1calculo * 0.075
+                if dir1 == 'arriba':
+                    velbally = -1 - orientacion1calculo * 0.075
+            if raquetaa.colliderect(hitboxbalon):
+                velbally = 0
+                if dir2 == 'abajo':
+                    velbally = 1 - orientacion2calculo * 0.075
+                if dir2 == 'arriba':
+                    velbally = -1 - orientacion2calculo * 0.075
+            if posypelota < 0:
+                velbally = velbally * -1
+            if posypelota> 540:
+                velbally = velbally * -1
+        if penalti == True:
+            if raqueta.colliderect(hitboxbalon):
+                velbally = 0
+                if dir1 == 'abajo':
+                    velbally = 0.5 - orientacion1calculo * 0.035
+                if dir1 == 'arriba':
+                    velbally = -0.5 - orientacion1calculo * 0.035
+            if raquetaa.colliderect(hitboxbalon):
+                velbally = 0
+                if dir2 == 'abajo':
+                    velbally = 0.5 - orientacion2calculo * 0.035
+                if dir2 == 'arriba':
+                    velbally = -0.5 - orientacion2calculo * 0.035 
+            if posypelota < 0:
+                velbally = velbally * -1
+            if posypelota> 540:
+                velbally = velbally * -1
+
+            
+        #animacion de pelota
+        if pelota1 == True:
+            pelotareal = pelota
+        if pelota2 == True:
+            pelotareal = pelota30
+
+        #marcador
+        ventana.blit(marcador, (310,0))
+
+        #puntuacion
+
+        puntuaciontxt1 = str(puntuacion1)
+        puntuaciontxt2 = str(puntuacion2)
+        puntuaciontotal = puntuaciontxt1 + ' '+ '-'+ ' '+  puntuaciontxt2
+        font1_1 = pygame.font.Font(None, 30)
+        puntuacion = font1_1.render(
+        puntuaciontotal, True, (negro))
+        ventana.blit(puntuacion, (340, 7))
+
+        #CRONO
+        cronobueno = cronoinicial -cronoini
+        cronobuenoaprox = round(cronobueno,2)
+        cronobuenisimo = str(cronobuenoaprox)
+        cronoinicial = reloj()
+        font1_2 = pygame.font.Font(None, 30)
+        puntuacion = font1_2.render(
+        cronobuenisimo, True, (negro))
+        cronobuenoaproxmas = round(cronobuenoaprox)
+        if penalti == False:
+            ventana.blit(puntuacion, (455, 7)) 
+
+
+        #primera parte
+        if cronobuenoaproxmas == 45:
+            colision2 = False
+            colision1 = False
+            silbatosound.play()
+            if pospelotaini == 400:
+                posxpelota = 350
+            else:
+                posxpelota = 400
+            posypelota = 275
+            pelotareal = pelota
+            r1posx = 50
+            r1posy = 293
+            r2posx = 740
+            r2posy = 293
+        
+ 
+    #segunda parte(penaltis)
+
+        if cronobuenoaproxmas == 90 and puntuacion1 == puntuacion2:
+            penalti = True      
+            colision2 = False
+            colision1 = False
+            pelotareal = pelota
+            posxpelota = 600
+            posypelota = 275
+            pelotareal = pelota
+            r1posx = 600
+            r1posy = 293
+            r2posx = 764
+            r2posy = 293
+            silbatosound.play()
+            adelantar1 = False
+            puntuacion1 = 0
+            puntuacion2 = 0
+
+            
+            
+        if penalti == True:
+            if posypelota <309 and posypelota > 241 and posxpelota < 0:
+                colision2 = False
+                colision1 = False
+                posxpelota = 600
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 600
+                r1posy = 293
+                r2posx = 764
+                r2posy = 293
+                puntuacion2 += 1
+                penaltistirados += 1
+                golsound.play()
+                adelantar1 = False
+                adelantar2 = True
+        if penalti == True:
+            if posypelota <309 and posypelota > 241 and posxpelota > 740:
+                colision2 = False
+                colision1 = False
+                posxpelota = 150
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 32
+                r1posy = 293
+                r2posx = 198
+                r2posy = 293
+                puntuacion1 += 1   
+                golsound.play() 
+                adelantar2 = False
+                adelantar1 = True
+        if penalti == True:
+            if posxpelota < 400 and colision1 == True:
+                colision2 = False
+                colision1 = False
+                posxpelota = 600
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 600
+                r1posy = 293
+                r2posx = 764
+                r2posy = 293
+                penaltistirados += 1
+                adelantar1 = False
+                adelantar2 = True
+
+         
+        if penalti == True:
+            if posxpelota > 400 and colision2 == True:
+                colision2 = False
+                colision1 = False
+                posxpelota = 150
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 32
+                r1posy = 293
+                r2posx = 198
+                r2posy = 293
+                adelantar2 = False
+                adelantar1 = True
+
+        if cronobuenoaproxmas >= 90 and puntuacion1 > puntuacion2 and penalti == False:
+            fases = 3
+            bichosound.play()
+        if cronobuenoaproxmas >= 90 and puntuacion1 < puntuacion2 and penalti == False:
+            fases = 4
+            bichosound.play()
+        if penalti == True and penaltistirados == 5:
+            if puntuacion1 > puntuacion2:
+                fases = 3
+                bichosound.play()
+            if puntuacion2 > puntuacion1:
+                fases = 4
+                bichosound.play()
+            else:
+                penaltistirados -= 1
+                
+                
+                
+                
+        #arreglando el bug del sonido de colision
+        if colision1:
+            if hitboxbalon.colliderect(raqueta):
+                sonidodelgolpe = 0.0
+            else:
+                sonidodelgolpe = 1.0
+        if colision2:
+            if hitboxbalon.colliderect(raquetaa):
+                sonidodelgolpe = 0.0
+            else:
+                sonidodelgolpe = 1.0                       
+        #añadiendo lo de han habido penales
+        if penalti:
+            habidopenaltis = True                
+                
+                
+    #repeticion
+    if fases == 9:
+        #creacion de los jugadores y el balon
+        hitboxbalon = Rect(posxpelota + 18, posypelota + 17, 15,15)    
+        hitboxpelota = draw.rect(ventana, (0,0,0), hitboxbalon)    
+        ventana.blit(fondo,(0,0))
+        raqueta = Rect(r1posx, r1posy, 5,15)
+        raquetaa = Rect(r2posx, r2posy, 5,15)
+        raqueta1 = draw.rect(ventana, (color1), raqueta)
+        raqueta2 = draw.rect(ventana, (color2), raquetaa)
+        ventana.blit(pelotareal,(posxpelota,posypelota))
+        #creando la repeticion
+        if insertarvariablesderepeticion:
+            golactivo = 1
+            numerodegoles = len(momentogol) +1
+            rango = momentogol[golactivo -1]
+            momentoini = rango -200
+            insertarvariablesderepeticion = False
+
+        if golactivo != numerodegoles:
+            if momentoini == rango:
+                rango = momentogol[golactivo -1]
+                momentoini = rango -200
+            if momentoini < 0:
+                momentoini = 0
+            r1posx = movimientosx1[momentoini]
+            r1posy = movimientosy1[momentoini]
+            r2posx = movimientosx2[momentoini]
+            r2posy = movimientosy2[momentoini]
+            posxpelota = movimientospelotax[momentoini]
+            posypelota = movimientospelotay[momentoini]
+            pelotareal = posiciondepelota[momentoini]
+            momentoini += 1
+            if momentoini == rango:
+                golactivo += 1
+        else:
+            if key_pressed[K_SPACE]:
+                if ganadorpararepeticion == 1:
+                    fases = 3
+                else:
+                    fases = 4
+            fontintro2 = pygame.font.Font(None, 50)
+            introletras2 = fontintro2.render(
+            'Presiona espacio para volver al menu', True, (negro))
+            ventana.blit(introletras2, (100, 500))
+
+    #juego 2personas con poderes
+    if fases == 10:
+        
+        orientacion1 = r1posy - posypelota
+        orientacion2 = r2posy - posypelota
+        if orientacion1 == 18:
+            dir1 = 'recto'
+        if orientacion1 > 18:
+            dir1 = 'arriba'
+        if orientacion1 < 18:
+            dir1 = 'abajo'
+        if orientacion2 == 18:
+            dir2 = 'recto'
+        if orientacion2 > 18:
+            dir2 = 'arriba'
+        if orientacion2 < 18:
+            dir2 = 'abajo'
+
+        hitboxbalon = Rect(posxpelota + 18, posypelota + 17, 15,15)    
+        hitboxpelota = draw.rect(ventana, (0,0,0), hitboxbalon)    
+    
+        ventana.blit(fondo, (0,0))
+        ventana.blit(pelotareal,(posxpelota,posypelota))
+    
+        #repeticion
+        movimientosx1.append(r1posx)
+        movimientosy1.append(r1posy)
+        movimientosx2.append(r2posx)
+        movimientosy2.append(r2posy)
+        movimientospelotax.append(posxpelota)
+        movimientospelotay.append(posypelota) 
+        posiciondepelota.append(pelotareal)
+        contadornumerosdelistas += 1
+        insertarvariablesderepeticion = True
+
+        
+        #golpe fuerte
+        if aceleracion2 > 50:
+            recuadrogolpefuerte1 = Rect(r1posx -1, r1posy-1, 7, 17)
+            draw.rect(ventana, (morado), recuadrogolpefuerte1)
+        if aceleracion1 > 50:
+            recuadrogolpefuerte2 = Rect(r2posx -1, r2posy-1, 7, 17)
+            draw.rect(ventana, (morado), recuadrogolpefuerte2)
+
+        #dibujar jugadores
+        raqueta = Rect(r1posx, r1posy, 5,15)
+        raquetaa = Rect(r2posx, r2posy, 5,15)
+        raqueta1 = draw.rect(ventana, (color1), raqueta)
+        raqueta2 = draw.rect(ventana, (color2), raquetaa)
+        #poder azul oscuro
+        if raquetaa.colliderect(hitboxbalon) and pelotareal == pelotacongelada or raquetaa.colliderect(hitboxbalon) and pelotareal == pelotacongelada30:
+            inmobil2 = True
+            relojfijopoder1 = reloj()
+        if raqueta.colliderect(hitboxbalon) and pelotareal == pelotacongelada or raqueta.colliderect(hitboxbalon) and pelotareal == pelotacongelada30:
+            inmobil1 = True
+            relojfijopoder2 = reloj()            
+        #movimiento
+        if adelantar1 == True:
+            if key_pressed[K_LEFT] and r2posx > 407  and not inmobil2 or key_pressed[K_LEFT] and penalti == True and adelantar1 == True or podertraspasarcampo2 and key_pressed[K_LEFT] and r2posx > 32:
+                r2posx -= veljugador2
+                aceleracion1 += 1
+            else:
+                aceleracion1 = 0
+        if adelantar1 == True:
+            if key_pressed[K_RIGHT] and r2posx < 763 and not inmobil2  and not penalti or key_pressed[K_RIGHT] and penalti and r2posx < 250:
+                r2posx += veljugador2  
+        if key_pressed[K_UP] and not inmobil2  and r2posy > 31:
+            r2posy -= veljugador2
+        if key_pressed[K_DOWN] and not inmobil2  and r2posy < 555:
+            r2posy += veljugador2    
+        if adelantar2 == True:
+            if key_pressed[K_a] and r1posx > 32 and not inmobil1 and not penalti or key_pressed[K_a] and penalti and r1posx > 546:
+                r1posx -= veljugador1
+        if adelantar2 == True:
+            if key_pressed[K_d] and r1posx < 389 and not inmobil1 or key_pressed[K_d] and penalti == True or podertraspasarcampo1 and key_pressed[K_d] and r1posx < 763:
+                r1posx += veljugador1
+                aceleracion2 += 1
+            else:
+                aceleracion2 = 0  
+        if key_pressed[K_w] and not inmobil1 and r1posy > 31:
+            r1posy -= veljugador1
+        if key_pressed[K_s] and not inmobil1 and r1posy < 555:
+            r1posy += veljugador1
+        #movimiento balon
+        if raqueta.colliderect(hitboxbalon) or posxpelota < 0 and posypelota >= 309 or posypelota <= 241 and posxpelota < 0:
+            colision1 = True
+            colision2 = False
+            if raqueta.colliderect(hitboxbalon):
+                velballx = 4 + aceleracion2 * 0.02
+            else:
+                velballx = 4 
+            golpesound.play()
+        if raquetaa.colliderect(hitboxbalon) or posxpelota > 740 and posypelota >= 309 or posypelota <= 241 and posxpelota > 740:
+            colision1 = False
+            colision2 = True
+            if raquetaa.colliderect(hitboxbalon):
+                velballx = 4 + aceleracion1 * 0.02
+            else:
+                velballx = 4 
+            golpesound.play()
+        #podernegro
+        if poderrulando2 and color2 == negro:
+            colision1 = False
+            colision2 = True
+        if poderrulando1 and color1 == negro:
+            colision1 = True
+            colision2 = False
+
+        
+        #seguimos moviendo el balon
+        if colision1:
+            posxpelota += velballx
+            posypelota += velbally
+            if pelotareal == pelota:
+                pelota1 = False
+                pelota2 = True    
+            else:
+                pelota2 = False
+                pelota1 = True
+
+        if colision2:
+            posxpelota -= velballx
+            posypelota += velbally
+            if pelotareal == pelota:
+                pelota1 = False
+                pelota2 = True    
+            else:
+                pelota2 = False
+                pelota1 = True
+    #gol
+        if penalti == False:
+            if posypelota <309 and posypelota > 241 and posxpelota < 0:
+                colision2 = False
+                colision1 = False
+                posxpelota = 350
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = spawn1
+                r1posy = 293
+                r2posx = spawn2
+                r2posy = 293
+                puntuacion2 += 1
+                golsound.play()
+                #repeticion gol
+                momentogol.append(contadornumerosdelistas)
+        if penalti == False:
+            if posypelota <309 and posypelota > 241 and posxpelota > 740:
+                colision2 = False
+                colision1 = False
+                posxpelota = 400
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = spawn1
+                r1posy = 293
+                r2posx = spawn2
+                r2posy = 293
+                puntuacion1 += 1
+                golsound.play()
+                #repeticiongol
+                momentogol.append(contadornumerosdelistas)
+        orientacion1calculo = orientacion1 - 18
+        orientacion2calculo = orientacion2 - 18
+
+        #rebotey
+        if penalti == False:
+            if raqueta.colliderect(hitboxbalon):
+                velbally = 0
+                if dir1 == 'abajo':
+                    velbally = 1 - orientacion1calculo * 0.075
+                if dir1 == 'arriba':
+                    velbally = -1 - orientacion1calculo * 0.075
+            if raquetaa.colliderect(hitboxbalon):
+                velbally = 0
+                if dir2 == 'abajo':
+                    velbally = 1 - orientacion2calculo * 0.075
+                if dir2 == 'arriba':
+                    velbally = -1 - orientacion2calculo * 0.075
+            if posypelota < 0:
+                velbally = velbally * -1
+            if posypelota> 540:
+                velbally = velbally * -1
+        if penalti == True:
+            if raqueta.colliderect(hitboxbalon):
+                velbally = 0
+                if dir1 == 'abajo':
+                    velbally = 0.5 - orientacion1calculo * 0.035
+                if dir1 == 'arriba':
+                    velbally = -0.5 - orientacion1calculo * 0.035
+            if raquetaa.colliderect(hitboxbalon):
+                velbally = 0
+                if dir2 == 'abajo':
+                    velbally = 0.5 - orientacion2calculo * 0.035
+                if dir2 == 'arriba':
+                    velbally = -0.5 - orientacion2calculo * 0.035 
+            if posypelota < 0:
+                velbally = velbally * -1
+            if posypelota> 540:
+                velbally = velbally * -1
+
+            
+        #animacion de pelota
+        if pelota1:
+            pelotareal = pelota
+        if pelota2:
+            pelotareal = pelota30
+        #poder azul
+        if poderrulando1 and color1 == azul:
+            pelotareal = pelotacongelada
+
+                    
+        if poderrulando2 and color2 == azul:
+            pelotareal = pelotacongelada
+
+
+
+
+
+        #primera parte
+        if cronobuenoaproxmas == 45:
+            colision2 = False
+            colision1 = False
+            silbatosound.play()
+            if pospelotaini == 400:
+                posxpelota = 350
+            else:
+                posxpelota = 400
+            posypelota = 275
+            pelotareal = pelota
+            r1posx = 50
+            r1posy = 293
+            r2posx = 740
+            r2posy = 293
+        
+ 
+    #segunda parte(penaltis)
+
+        if cronobuenoaproxmas == 90 and puntuacion1 == puntuacion2:
+            penalti = True      
+            colision2 = False
+            colision1 = False
+            pelotareal = pelota
+            posxpelota = 600
+            posypelota = 275
+            r1posx = 600
+            r1posy = 293
+            r2posx = 764
+            r2posy = 293
+            silbatosound.play()
+            adelantar1 = False
+            puntuacion1 = 0
+            puntuacion2 = 0
+
+            
+            
+        if penalti == True:
+            if posypelota <309 and posypelota > 241 and posxpelota < 0:
+                colision2 = False
+                colision1 = False
+                posxpelota = 600
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 600
+                r1posy = 293
+                r2posx = 764
+                r2posy = 293
+                puntuacion2 += 1
+                penaltistirados += 1
+                golsound.play()
+                adelantar1 = False
+                adelantar2 = True
+        if penalti == True:
+            if posypelota <309 and posypelota > 241 and posxpelota > 740:
+                colision2 = False
+                colision1 = False
+                posxpelota = 150
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 32
+                r1posy = 293
+                r2posx = 198
+                r2posy = 293
+                puntuacion1 += 1   
+                golsound.play() 
+                adelantar2 = False
+                adelantar1 = True
+        if penalti == True:
+            if posxpelota < 400 and colision1 == True:
+                colision2 = False
+                colision1 = False
+                posxpelota = 600
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 600
+                r1posy = 293
+                r2posx = 764
+                r2posy = 293
+                penaltistirados += 1
+                adelantar1 = False
+                adelantar2 = True
+
+         
+        if penalti == True:
+            if posxpelota > 400 and colision2 == True:
+                colision2 = False
+                colision1 = False
+                posxpelota = 150
+                posypelota = 275
+                pelotareal = pelota
+                r1posx = 32
+                r1posy = 293
+                r2posx = 198
+                r2posy = 293
+                adelantar2 = False
+                adelantar1 = True
+
+        if cronobuenoaproxmas >= 90 and puntuacion1 > puntuacion2 and penalti == False:
+            fases = 3
+            bichosound.play()
+        if cronobuenoaproxmas >= 90 and puntuacion1 < puntuacion2 and penalti == False:
+            fases = 4
+            bichosound.play()
+        if penalti == True and penaltistirados == 5:
+            if puntuacion1 > puntuacion2:
+                fases = 3
+                bichosound.play()
+            if puntuacion2 > puntuacion1:
+                fases = 4
+                bichosound.play()
+            else:
+                penaltistirados -= 1       
+        
+        
+        
+        
+        #poderes
+        for e in events:
+            if key_pressed[K_e] and not penalti:
+                poder1 = True
+            if key_pressed[K_RSHIFT] and not penalti:
+                poder2 = True
+        #poder primer jugador
+        if poder1 and poder1disponible:
+            relojfijopoder1 = reloj()
+            poderrulando1 = True
+            poder1disponible = False
+            powerupsound.play()
+            #rojo
+            if color1 == rojo:
+                veljugador2 -= 1.5
+                if velballx > 0:
+                    velballx -= 1.5
+                else:
+                    velballx += 1.5
+            #amarillo
+            if color1 == amarillo:
+                velballx = velballx * -1
+            #negro    
+            if color1 == negro:
+                poderrulando1 = False
+            #azul
+            if color1 == azul:
+                poderrulando1 = False
+            if color1 == verde:
+                poderrulando1 = False
+
+
+        #rojo        
+        if poderrulando1 and color1 == rojo:
+            if reloj() - relojfijopoder1 > 20:
+                poderrulando1 = False
+                veljugador2 += 1.5
+                if velballx > 0:
+                    velballx += 1.5
+                else:
+                    velballx -= 1.5
+        #blanco
+        if poderrulando1 and color1 == blanco:
+            if reloj() - relojfijopoder1 < 3:
+                flash1 = Rect(400, 0, 400, 600)
+                draw.rect(ventana, blanco, flash1)
+        #negro
+        if color1 == negro and poder1 and poderrulando1 != True and colision1:
+            if posxpelota  <= 407 and posxpelota  >= 389:
+                poderrulando1 = True    
+                relojfijopoder1 = reloj()
+        if poderrulando1 and color1 == negro:
+            if reloj() - relojfijopoder1 > 1.5:
+                poderrulando1 = False
+                poder1 = False
+                disapearsound.play()
+        #azul cian      
+        if poderrulando1 and color1 == cian:
+            podertraspasarcampo1 = True
+            if reloj()- relojfijopoder1 >10:
+                poderrulando1 = False
+                podertraspasarcampo1 = False
+                disapearsound.play()
+        #azul oscuro
+        if color1 == azul and poder1 and poderrulando1 != True and colision1:
+            if posxpelota  <= 407 and posxpelota  >= 389:
+                poderrulando1 = True    
+        if poderrulando1 and color1 == azul and colision2 and posxpelota  <= 407 and posxpelota  >= 389:
+            poderrulando1 = False
+            poder1 = False   
+            disapearsound.play() 
+        #verde
+        if raqueta.colliderect(hitboxbalon) and poderrulando1 != True and color1 == verde and poder1:
+            poderrulando1 = True
+            posclon1y = posypelota
+            posclon2y = posypelota
+            velclon1 = 4
+            velclon2 = 4
+        if poderrulando1 and color1 == verde and poder1:
+            if velbally == 0:
+                clon1 = ventana.blit(pelotareal, (posxpelota, posclon1y))
+                clon2 = ventana.blit(pelotareal, (posxpelota, posclon2y))
+                posclon1y += velclon1
+                posclon2y -= velclon2
+                if posclon2y > 540:
+                    velclon2 = velclon2 * -1
+                if posclon2y < 0:
+                    velclon2 = velclon2 * -1
+                if posclon1y > 540:
+                    velclon1 = velclon1 * -1
+                if posclon1y < 0:
+                    velclon1 = velclon1 * -1 
+            if velbally > 0:
+                clon1 = ventana.blit(pelotareal, (posxpelota, posclon1y))
+                clon2 = ventana.blit(pelotareal, (posxpelota, posclon2y))
+                posclon2y -= velclon2
+                if posclon2y > 540:
+                    velclon2 = velclon2 * -1
+                if posclon2y < 0:
+                    velclon2 = velclon2 * -1
+            if velbally < 0:
+                clon1 = ventana.blit(pelotareal, (posxpelota, posclon1y))
+                clon2 = ventana.blit(pelotareal, (posxpelota, posclon2y))
+                posclon1y += velclon1
+                if posclon1y > 540:
+                    velclon1 = velclon1 * -1
+                if posclon1y < 0:
+                    velclon1 = velclon1 * -1 
+            if colision2 or not colision1 and not colision2 or velballx <0:
+                poderrulando1 = False
+                poder1 = False
+                disapearsound.play()
+        
+        if reloj() - relojfijopoder1 > 5:
+            inmobil2 = False
+        #magenta
+        if poderrulando1 and color1 == magenta:
+            bot1amigable = Rect(rosax1, rosay1, 5, 15)
+            draw.rect(ventana, magenta, bot1amigable)
+
+            if rosay1 - posypelota - 18 > 0:
+                rosay1 -=2
+            if rosay1 - posypelota - 18 < 0:
+                rosay1 +=2
+            if bot1amigable.colliderect(hitboxbalon):
+                colision1 = True
+                colision2 = False
+                golpesound.play()
+        if poderrulando1 and color1 == magenta and reloj() - relojfijopoder1 > 20:
+            poderrulando1 = False
+            rosay1 = 293
+            rosax1 = 50
+            disapearsound.play()
+
+            
+            
+        # poder segundo jugador  
+        if poder2 and poder2disponible:
+            poderrulando2 = True
+            relojfijopoder2 = reloj()
+            poder2disponible = False
+            powerupsound.play()
+            #rojo
+            if color2 == rojo:
+                veljugador1 -= 1.5
+                if velballx > 0:
+                    velballx -= 1.5
+                else:
+                    velballx += 1.5
+            #amarillo
+            if color2 == amarillo:
+                velballx = velballx * -1
+            #negro
+            if color2 == negro:
+                poderrulando2 = False
+            #azul
+            if color2 == azul:
+                poderrulando2 = False
+            #verde
+            if color2 == verde:
+                poderrulando2 = False
+
+
+        #rojo
+        if poderrulando2 and color2 == rojo:
+            if reloj() - relojfijopoder2 > 20:
+                poderrulando2 = False
+                veljugador1 += 1.5
+                if velballx > 0:
+                    velballx += 1.5
+                else:
+                    velballx -= 1.5
+                
+
+        #blanco
+        if poderrulando2 and color2 == blanco:
+            if reloj() - relojfijopoder2 < 3:
+                flash2 = Rect(0, 0, 400, 600)
+                draw.rect(ventana, blanco, flash2)
+        #negro
+        if color2 == negro and poder2 and poderrulando2 != True and colision2:
+            if posxpelota  <= 407 and posxpelota  >= 389:
+                poderrulando2 = True
+                relojfijopoder2 = reloj()
+        if poderrulando2 and color2 == negro:
+            if reloj() - relojfijopoder2 > 1.5:
+                poderrulando2 = False
+                poder2 = False
+                disapearsound.play()
+                #las modificaciones estan hechas en las colisiones
+        #azul cian
+        if poderrulando2 and color2 == cian:
+            podertraspasarcampo2 = True
+            if reloj()- relojfijopoder2 >10:
+                poderrulando2 = False
+                podertraspasarcampo2 = False  
+                disapearsound.play()      
+        #azul oscuro
+        if color2 == azul and poder2 and poderrulando2 != True and colision2:
+            if posxpelota  <= 407 and posxpelota  >= 389:
+                poderrulando2 = True    
+        if poderrulando2 and color2 == azul and colision1 and posxpelota  <= 407 and posxpelota  >= 389:
+            poderrulando2 = False
+            poder2 = False  
+            disapearsound.play()  
+
+        if reloj() - relojfijopoder2 > 5:
+            inmobil1 = False
+
+
+        #verde
+        if raquetaa.colliderect(hitboxbalon) and poderrulando2 != True and color2 == verde and poder2:
+            poderrulando2 = True
+            posclon1_2y = posypelota
+            posclon2_2y = posypelota
+            velclon1_2 = 4
+            velclon2_2 = 4
+        if poderrulando2 and color2 == verde and poder2:
+            if velbally == 0:
+                clon1_2 = ventana.blit(pelotareal, (posxpelota, posclon1_2y))
+                clon2_2 = ventana.blit(pelotareal, (posxpelota, posclon2_2y))
+                posclon1_2y += velclon1_2
+                posclon2_2y -= velclon2_2
+                if posclon2_2y > 540:
+                    velclon2_2 = velclon2_2 * -1
+                if posclon2_2y < 0:
+                    velclon2_2 = velclon2_2 * -1
+                if posclon1_2y > 540:
+                    velclon1_2 = velclon1_2 * -1
+                if posclon1_2y < 0:
+                    velclon1_2 = velclon1_2 * -1 
+            if velbally > 0:
+                clon1_2 = ventana.blit(pelotareal, (posxpelota, posclon1_2y))
+                clon2_2 = ventana.blit(pelotareal, (posxpelota, posclon2_2y))
+                posclon2_2y -= velclon2_2
+                if posclon2_2y > 540:
+                    velclon2_2 = velclon2_2 * -1
+                if posclon2_2y < 0:
+                    velclon2_2 = velclon2_2 * -1
+            if velbally < 0:
+                clon1_2 = ventana.blit(pelotareal, (posxpelota, posclon1_2y))
+                clon2_2 = ventana.blit(pelotareal, (posxpelota, posclon2_2y))
+                posclon1_2y += velclon1_2
+                if posclon1_2y > 540:
+                    velclon1_2 = velclon1_2 * -1
+                if posclon1_2y < 0:
+                    velclon1_2 = velclon1_2 * -1 
+            if colision1 or not colision1 and not colision2 or velballx < 0:
+                poderrulando2 = False
+                poder2 = False
+                disapearsound.play()
+        
+        if poderrulando2 and color2 == magenta:
+            bot2amigable = Rect(rosax2, rosay2, 5, 15)
+            draw.rect(ventana, magenta, bot2amigable)
+
+            if rosay2 - posypelota - 18 > 0:
+                rosay2 -=2
+            if rosay2 - posypelota - 18 < 0:
+                rosay2 +=2
+            if bot2amigable.colliderect(hitboxbalon):
+                colision2 = True
+                colision1 = False
+                golpesound.play()
+        if poderrulando2 and color2 == magenta and reloj() - relojfijopoder2 > 20:
+            poderrulando2 = False
+            rosay2 = 293
+            rosax2 = 740
+            disapearsound.play()
+        #exporto diseño del juego despues para que nunca se tape pase lo que pase 
+        
+        #marcador
+        ventana.blit(marcador, (310,0))
+        #puntuacion
+
+        puntuaciontxt1 = str(puntuacion1)
+        puntuaciontxt2 = str(puntuacion2)
+        puntuaciontotal = puntuaciontxt1 + ' '+ '-'+ ' '+  puntuaciontxt2
+        font1_1 = pygame.font.Font(None, 30)
+        puntuacion = font1_1.render(
+        puntuaciontotal, True, (negro))
+        ventana.blit(puntuacion, (340, 7))
+
+        #CRONO
+        cronobueno = cronoinicial -cronoini
+        cronobuenoaprox = round(cronobueno,2)
+        cronobuenisimo = str(cronobuenoaprox)
+        cronoinicial = reloj()
+        font1_2 = pygame.font.Font(None, 30)
+        puntuacion = font1_2.render(
+        cronobuenisimo, True, (negro))
+        cronobuenoaproxmas = round(cronobuenoaprox)
+        if penalti == False:
+            ventana.blit(puntuacion, (455, 7)) 
+        #arreglando el bug del sonido de colision
+        if colision1:
+            if hitboxbalon.colliderect(raqueta):
+                sonidodelgolpe = 0.0
+            else:
+                sonidodelgolpe = 1.0
+        if colision2:
+            if hitboxbalon.colliderect(raquetaa):
+                sonidodelgolpe = 0.0
+            else:
+                sonidodelgolpe = 1.0       
+        #añadiendo lo de han habido penales
+        if penalti:
+            habidopenaltis = True        
+        
+        
+        
+        
+        
+    #para actualizar el sonido del golpe
+    golpesound = mixer.Sound('golpefutbol.mp3')
+    golpesound.set_volume(sonidodelgolpe)
+    #no quitar, importante!!!!!!!!
+    key_pressed = key.get_pressed()
+    if key_pressed[K_ESCAPE]: 
+        rular = False 
+    if key_pressed[K_0]:
+        cronoini -= 1
+
+    
+
+
+
+
+    display.update()
+    clock.tick(FPS)
+
+
+
+#Cosas que mejorar
+# que sea mas intuitivo que has selecionado y que no has selecionado, hecho
+#pantalla de principio mas divertida, hecho
+#completado-añadir habilidades por color, camara lenta-rojo hecho, clonar balon-verde, tapar pantalla del rival-blanco-hecho, golpe sin tocar el balon-amarillo-hecho, bot amigo-rosa-hecho, balon congelador(congela al oponente si toca el balon)-azul oscuro-hecho,  traspasar al oponente los primeros dos segundos tras tocar el balon(tiempo regulable)-negro-hecho, traspasar el campo-azul claro-hecho.
+# 2 personas vs IA
+#modificar sonidos de selecion secundarios-hecho
+#multijugador local
+#arreglar bug del sondio, podemos poner el sonido a cero si se repite mucho,hechooooo
+#crear hitbox en las porterias y dejar de comprobar las cordenadas del balón para optimizar el programa y que sea mas realista, dar un sonido característico al golpear el palo
+#crear música para el juego
+#optimización en general
+#panel de goles mejorado, hecho
+#que el balón suene más o menos fuerte según el impulso con el que se le de
